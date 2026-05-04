@@ -32,48 +32,58 @@ Cloudflare Pages 설정:
 
 ## Study Content
 
-주제별 학습 내용은 각 폴더에 둡니다.
+주제별 학습 내용은 `content/` 아래에 Markdown으로 둡니다.
 
-- 블록체인: [blockchain/data.js](blockchain/data.js)
-- AI: [ai/data.js](ai/data.js)
+- 블록체인: [content/blockchain](content/blockchain)
+- AI: [content/ai](content/ai)
 
-새 스터디를 추가할 때는 새 폴더에 `data.js`를 만들고 [src/studies.js](src/studies.js)에 등록합니다.
-
-예를 들어 AI 스터디를 추가한다면:
+폴더 구조가 그대로 목차가 됩니다.
 
 ```text
-ai/data.js
+content/
+  blockchain/
+    index.md
+    ethereum/
+      index.md
+      why-blockchain.md
+  ai/
+    index.md
+    llm/
+      index.md
+      what-is-token.md
 ```
 
-```js
-// ai/data.js
-export const aiStudy = {
-  id: "ai",
-  title: "AI",
-  description: "AI 개념과 구현을 정리합니다.",
-  children: [
-    {
-      id: "llm",
-      title: "LLM",
-      description: "언어 모델의 동작 방식과 사용법을 정리합니다.",
-      posts: [
-        {
-          id: "what-is-token",
-          title: "토큰이란 무엇인가",
-          date: "준비 중",
-          summary: "텍스트가 모델 입력 단위로 나뉘는 방식을 정리합니다."
-        }
-      ]
-    }
-  ]
-};
+새 스터디를 추가할 때는 `content/` 아래에 폴더와 `index.md`를 만듭니다.
+
+예를 들어 Linux 스터디를 추가한다면:
+
+```text
+content/linux/index.md
+content/linux/shell/index.md
+content/linux/shell/basic-commands.md
 ```
 
-그리고 [src/studies.js](src/studies.js)에 등록합니다.
+스터디나 하위 주제의 `index.md`:
 
-```js
-import { blockchainStudy } from "../blockchain/data.js";
-import { aiStudy } from "../ai/data.js";
-
-export const studies = [blockchainStudy, aiStudy];
+```md
+---
+title: Linux
+description: 운영체제와 쉘 사용법을 공부합니다.
+order: 3
+---
 ```
+
+글 파일:
+
+```md
+---
+title: 기본 명령어
+date: 준비 중
+summary: 파일과 디렉터리를 다루는 기본 명령어를 정리합니다.
+order: 1
+---
+
+본문을 작성합니다.
+```
+
+`src/content.js`가 `content/**/*.md`를 자동으로 읽어서 목차와 글 목록을 만듭니다.
