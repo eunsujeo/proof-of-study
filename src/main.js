@@ -130,41 +130,45 @@ function renderMarkdown(markdown) {
 
 function renderHome() {
   return `
-    <section class="toc" aria-label="스터디 목차">
+    <div class="home-layout">
+      <aside class="toc" aria-label="스터디 목차">
         <h2>${siteTitle}</h2>
         <ul>
           ${studies.map(renderTree).join("")}
         </ul>
-      </section>
+      </aside>
 
-      ${studies
-      .map(
-        (study) => `
-          <section class="study" id="${study.id}">
-            <div class="section-heading">
-              <p class="eyebrow">${getPostCount(study)} posts</p>
-              <h3>${study.title}</h3>
-              <p>${study.description}</p>
-            </div>
-            ${study.children
-              .map(
-                (child) => `
-                  <section class="track" id="${child.id}">
-                    <div class="track-heading">
-                      <h4>${child.title}</h4>
-                      <p>${child.description}</p>
-                    </div>
-                    <div class="posts">
-                      ${child.posts.map(renderPost).join("")}
-                    </div>
-                  </section>
-                `
-              )
-              .join("")}
-          </section>
-        `
-      )
-      .join("")}
+      <div class="study-list">
+        ${studies
+          .map(
+            (study) => `
+              <section class="study" id="${study.id}">
+                <div class="section-heading">
+                  <p class="eyebrow">${getPostCount(study)} posts</p>
+                  <h3>${study.title}</h3>
+                  <p>${study.description}</p>
+                </div>
+                ${study.children
+                  .map(
+                    (child) => `
+                      <section class="track" id="${child.id}">
+                        <div class="track-heading">
+                          <h4>${child.title}</h4>
+                          <p>${child.description}</p>
+                        </div>
+                        <div class="posts">
+                          ${child.posts.map(renderPost).join("")}
+                        </div>
+                      </section>
+                    `
+                  )
+                  .join("")}
+              </section>
+            `
+          )
+          .join("")}
+      </div>
+    </div>
   `;
 }
 
