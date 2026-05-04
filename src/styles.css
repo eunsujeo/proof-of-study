@@ -161,8 +161,10 @@ main {
 }
 
 .post a {
-  display: grid;
+  align-items: start;
+  display: flex;
   gap: 6px;
+  justify-content: space-between;
   padding: 18px;
 }
 
@@ -176,6 +178,13 @@ main {
   font-size: 20px;
   letter-spacing: 0;
   margin: 0;
+}
+
+.post strong {
+  color: #9b4f2d;
+  font-size: 13px;
+  flex: 0 0 auto;
+  margin-top: 3px;
 }
 
 .article {
@@ -204,10 +213,22 @@ main {
 }
 
 .article-meta {
+  align-items: center;
   color: #8a6d54;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   font-size: 14px;
   font-weight: 750;
   margin-bottom: 34px;
+}
+
+.article-meta code {
+  background: #ede8dd;
+  border-radius: 6px;
+  color: #4d554b;
+  font: inherit;
+  padding: 3px 7px;
 }
 
 .article-body {
@@ -262,5 +283,9 @@ main {
 
   .section-heading h3 {
     font-size: 30px;
+  }
+
+  .post a {
+    display: grid;
   }
 }
