@@ -1,6 +1,6 @@
 # Study Notes
 
-Cloudflare Pages에 배포할 개인 학습 노트 사이트입니다.
+Cloudflare Pages에 배포할 개인 학습 노트 사이트입니다. Astro로 Markdown 글마다 정적 HTML 페이지를 생성합니다.
 
 현재 목차:
 
@@ -86,4 +86,16 @@ order: 1
 본문을 작성합니다.
 ```
 
-`src/content.js`가 `content/**/*.md`를 자동으로 읽어서 목차와 글 목록을 만듭니다.
+`src/lib/content.js`가 `content/**/*.md`를 자동으로 읽어서 목차와 글 목록을 만들고, Astro가 글마다 정적 페이지를 생성합니다.
+
+예를 들어 아래 글은:
+
+```text
+content/blockchain/ethereum/why-blockchain.md
+```
+
+빌드 후 아래 정적 페이지가 됩니다.
+
+```text
+dist/blockchain/ethereum/why-blockchain/index.html
+```

@@ -1,0 +1,38 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { posts } from "../../../lib/content.js";
+
+export function getStaticPaths() {
+  return posts.map(({ post, study, track }) => ({
+    params: {
+      post: post.id,
+      study: study.id,
+      track: track.id
+    },
+    props: {
+      post,
+      study,
+      track
+    }
+  }));
+}
+
+const { post, study, track } = Astro.props;
+const Content = post.Content;
+---
+
+<BaseLayout title={`${post.title} | proof of study`} description={post.summary}>
+  <article class="article">
+    <a class="back-link" href="/">목차로 돌아가기</a>
+    <p class="eyebrow">{study.title} / {track.title}</p>
+    <h2>{post.title}</h2>
+    <p class="article-summary">{post.summary}</p>
+    <div class="article-meta">
+      <span>{post.date}</span>
+      <code>{post.route}</code>
+    </div>
+    <div class="article-body">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
