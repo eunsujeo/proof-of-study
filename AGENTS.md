@@ -3,6 +3,7 @@
 ## Project
 
 `proof-of-study` is a personal study blog deployed with Cloudflare Pages.
+It uses Astro to generate static HTML pages from Markdown files.
 
 The root page should work like a quiet table of contents:
 
@@ -88,6 +89,8 @@ The design should feel like a maintained personal technical notebook, not a SaaS
 - Each track folder has an `index.md`.
 - Each post is a Markdown file in a track folder.
 - Do not maintain duplicate manual post arrays.
+- Astro pages live in `src/pages/`.
+- Shared layouts live in `src/layouts/`.
 
 Example:
 
@@ -95,8 +98,9 @@ Example:
 content/blockchain/index.md
 content/blockchain/ethereum/index.md
 content/blockchain/ethereum/why-blockchain.md
-src/content.js
-src/main.js
+src/lib/content.js
+src/pages/index.astro
+src/pages/[study]/[track]/[post].astro
 src/styles.css
 ```
 

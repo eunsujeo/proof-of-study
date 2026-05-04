@@ -1,0 +1,26 @@
+---
+import "../styles.css";
+
+const { description = "공부한 내용을 주제별 Markdown으로 정리하는 개인 학습 노트", title = "proof of study" } =
+  Astro.props;
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <p class="eyebrow">Study Notes</p>
+      <h1><a href="/">proof of study</a></h1>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>

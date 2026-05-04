@@ -1,33 +1,9 @@
-const files = import.meta.glob("../content/**/*.md", {
-  eager: true,
-  query: "?raw",
-  import: "default"
+const files = import.meta.glob("../../content/**/*.md", {
+  eager: true
 });
 
-function parseFrontmatter(raw) {
-  const match = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
-
-  if (!match) {
-    return { metadata: {}, body: raw.trim() };
-  }
-
-  const metadata = Object.fromEntries(
-    match[1]
-      .split("\n")
-      .filter(Boolean)
-      .map((line) => {
-        const separatorIndex = line.indexOf(":");
-        const key = line.slice(0, separatorIndex).trim();
-        const value = line.slice(separatorIndex + 1).trim();
-        return [key, /^\d+$/.test(value) ? Number(value) : value];
-      })
-  );
-
-  return { metadata, body: match[2].trim() };
-}
-
 function getSlug(path) {
-  return path.replace("../content/", "").replace(/\.md$/, "").split("/");
+  return path.replace("../../content/", "").replace(/\.md$/, "").split("/");
 }
 
 function sortByOrder(items) {
@@ -37,15 +13,24 @@ function sortByOrder(items) {
   });
 }
 
-const entries = Object.entries(files).map(([path, raw]) => {
-  const { metadata, body } = parseFrontmatter(raw);
-  return {
-    path,
-    parts: getSlug(path),
-    body,
-    ...metadata
-  };
-});
+function formatDate(value) {
+  if (value instanceof Date) {
+    return value.toISOString().slice(0, 10);
+  }
+
+  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
+    return value.slice(0, 10);
+  }
+
+  return value;
+}
+
+const entries = Object.entries(files).map(([path, module]) => ({
+  path,
+  parts: getSlug(path),
+  Content: module.Content,
+  ...module.frontmatter
+}));
 
 const studyIndexes = entries.filter((entry) => entry.parts.length === 2 && entry.parts[1] === "index");
 const trackIndexes = entries.filter((entry) => entry.parts.length === 3 && entry.parts[2] === "index");
@@ -63,11 +48,11 @@ export const studies = sortByOrder(
           .map((post) => ({
             id: post.parts[2],
             title: post.title,
-            date: post.date,
+            date: formatDate(post.date),
             summary: post.summary,
             order: post.order,
-            body: post.body,
-            route: `/${studyId}/${trackId}/${post.parts[2]}`
+            Content: post.Content,
+            route: `/${studyId}/${trackId}/${post.parts[2]}/`
           }));
 
         return {
@@ -89,15 +74,12 @@ export const studies = sortByOrder(
   })
 );
 
-export function findPost(route) {
-  for (const study of studies) {
-    for (const child of study.children) {
-      const post = child.posts.find((item) => item.route === route);
-      if (post) {
-        return { study, child, post };
-      }
-    }
-  }
-
-  return null;
-}
+export const posts = studies.flatMap((study) =>
+  study.children.flatMap((track) =>
+    track.posts.map((post) => ({
+      study,
+      track,
+      post
+    }))
+  )
+);
