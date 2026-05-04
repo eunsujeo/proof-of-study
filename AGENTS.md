@@ -83,15 +83,19 @@ The design should feel like a maintained personal technical notebook, not a SaaS
 ## File Structure
 
 - Site rendering code lives in `src/`.
-- Study content lives in topic folders.
-- Blockchain content lives in `blockchain/`.
-- Register new study folders in `src/studies.js`.
+- Study content lives in `content/`.
+- Each study folder has an `index.md`.
+- Each track folder has an `index.md`.
+- Each post is a Markdown file in a track folder.
+- Do not maintain duplicate manual post arrays.
 
 Example:
 
 ```text
-blockchain/data.js
-src/studies.js
+content/blockchain/index.md
+content/blockchain/ethereum/index.md
+content/blockchain/ethereum/why-blockchain.md
+src/content.js
 src/main.js
 src/styles.css
 ```
