@@ -30,6 +30,8 @@ Cloudflare Pages 설정:
 - Build output directory: `dist`
 - Node.js version: `22` 이상 권장
 
+최근 배포 테스트: 2026-05-04
+
 ## Study Content
 
 주제별 학습 내용은 `content/` 아래에 Markdown으로 둡니다.
