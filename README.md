@@ -34,3 +34,42 @@ Cloudflare Pages 설정:
 - 블록체인: [blockchain/data.js](blockchain/data.js)
 
 새 스터디를 추가할 때는 새 폴더에 `data.js`를 만들고 [src/studies.js](src/studies.js)에 등록합니다.
+
+예를 들어 AI 스터디를 추가한다면:
+
+```text
+ai/data.js
+```
+
+```js
+// ai/data.js
+export const aiStudy = {
+  id: "ai",
+  title: "AI",
+  description: "AI 개념과 구현을 정리합니다.",
+  children: [
+    {
+      id: "llm",
+      title: "LLM",
+      description: "언어 모델의 동작 방식과 사용법을 정리합니다.",
+      posts: [
+        {
+          id: "what-is-token",
+          title: "토큰이란 무엇인가",
+          date: "준비 중",
+          summary: "텍스트가 모델 입력 단위로 나뉘는 방식을 정리합니다."
+        }
+      ]
+    }
+  ]
+};
+```
+
+그리고 [src/studies.js](src/studies.js)에 등록합니다.
+
+```js
+import { blockchainStudy } from "../blockchain/data.js";
+import { aiStudy } from "../ai/data.js";
+
+export const studies = [blockchainStudy, aiStudy];
+```
