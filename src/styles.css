@@ -31,17 +31,19 @@ a {
 
 .site-header {
   border-bottom: 1px solid #ded9cd;
-  display: grid;
-  justify-items: center;
-  padding: 28px clamp(20px, 6vw, 88px) 22px;
-  text-align: center;
-}
-
-.site-header > * {
   margin-left: auto;
   margin-right: auto;
-  max-width: var(--header-width);
-  width: fit-content;
+  max-width: var(--content-width);
+  padding: 18px clamp(20px, 6vw, 88px);
+  width: 100%;
+}
+
+.site-title {
+  color: #181a17;
+  display: inline-block;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0;
 }
 
 .eyebrow {
@@ -51,19 +53,6 @@ a {
   letter-spacing: 0;
   margin: 0 0 8px;
   text-transform: uppercase;
-}
-
-.site-header h1 {
-  font-size: clamp(30px, 4vw, 44px);
-  letter-spacing: 0;
-  line-height: 1;
-  margin: 0;
-  max-width: 100%;
-  text-align: center;
-}
-
-.site-header h1 a {
-  display: block;
 }
 
 main {
