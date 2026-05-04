@@ -1,72 +1,41 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { studies } from "../lib/content.js";
-
-const siteTitle = "proof of study";
-
-function getPostCount(study) {
-  return study.children.reduce((sum, child) => sum + child.posts.length, 0);
-}
 ---
 
 <BaseLayout>
-  <div class="home-layout">
-    <aside class="toc" aria-label="스터디 목차">
-      <h2>{siteTitle}</h2>
-      <ul>
-        {
-          studies.map((study) => (
-            <li>
-              <a href={`#${study.id}`}>{study.title}</a>
-              <ul>
-                {study.children.map((child) => (
-                  <li>
-                    <a href={`#${child.id}`}>{child.title}</a>
-                  </li>
-                ))}
-              </ul>
-            </li>
-          ))
-        }
-      </ul>
-    </aside>
+  <nav class="study-tree" aria-label="스터디 목차">
+    {
+      studies.map((study) => (
+        <details class="study-node">
+          <summary>
+            <span class="summary-title">{study.title}</span>
+            <small>{study.description}</small>
+          </summary>
 
-    <div class="study-list">
-      {
-        studies.map((study) => (
-          <section class="study" id={study.id}>
-            <div class="section-heading">
-              <p class="eyebrow">{getPostCount(study)} posts</p>
-              <h3>{study.title}</h3>
-              <p>{study.description}</p>
-            </div>
-
+          <div class="track-tree">
             {study.children.map((child) => (
-              <section class="track" id={child.id}>
-                <div class="track-heading">
-                  <h4>{child.title}</h4>
-                  <p>{child.description}</p>
-                </div>
+              <details class="track-node">
+                <summary>
+                  <span class="summary-title">{child.title}</span>
+                  <small>{child.description}</small>
+                </summary>
 
-                <div class="posts">
+                <ol class="post-tree">
                   {child.posts.map((post) => (
-                    <article class="post">
+                    <li>
                       <a href={post.route}>
-                        <div>
-                          <span>{post.date}</span>
-                          <h4>{post.title}</h4>
-                          <p>{post.summary}</p>
-                        </div>
-                        <strong>Read</strong>
+                        <span>{post.title}</span>
+                        <small>{post.date}</small>
                       </a>
-                    </article>
+                    </li>
                   ))}
-                </div>
-              </section>
+                </ol>
+              </details>
             ))}
-          </section>
-        ))
-      }
-    </div>
-  </div>
+          </div>
+        </details>
+      ))
+    }
+  </nav>
 </BaseLayout>
