@@ -2,9 +2,11 @@
 
 Cloudflare Pages에 배포할 개인 학습 노트 사이트입니다.
 
-현재 등록된 스터디:
+현재 목차:
 
-- `blockchain`: 블록체인/이더리움
+- proof of study
+  - 블록체인
+    - 이더리움
 
 ## Local Development
 
@@ -29,6 +31,6 @@ Cloudflare Pages 설정:
 
 주제별 학습 내용은 각 폴더에 둡니다.
 
-- 블록체인/이더리움: [blockchain/data.js](blockchain/data.js)
+- 블록체인: [blockchain/data.js](blockchain/data.js)
 
 새 스터디를 추가할 때는 새 폴더에 `data.js`를 만들고 [src/studies.js](src/studies.js)에 등록합니다.
