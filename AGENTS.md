@@ -21,6 +21,7 @@ Do not invent technical or historical study content from memory when adding post
 
 Before writing or changing study material:
 
+- Read `NEXT_STUDY.md` first to understand the current learning sequence and next planned topic.
 - Research the topic using primary or authoritative sources.
 - Prefer official documentation, specifications, standards, original papers, or maintainers' docs.
 - Record the sources used in the final response or in the post metadata if the content model supports it.

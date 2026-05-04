@@ -63,6 +63,12 @@ git pull origin main
 npm install
 ```
 
+다음에 무엇을 배울지 확인합니다.
+
+```bash
+cat NEXT_STUDY.md
+```
+
 글을 작성하거나 검토할 때는 콘텐츠 전용 dev server를 사용합니다.
 
 ```bash
