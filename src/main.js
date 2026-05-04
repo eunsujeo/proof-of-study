@@ -31,9 +31,12 @@ function renderPost(post) {
   return `
     <article class="post">
       <a href="#${post.route}">
-        <span>${post.date}</span>
-        <h4>${post.title}</h4>
-        <p>${post.summary}</p>
+        <div>
+          <span>${post.date}</span>
+          <h4>${post.title}</h4>
+          <p>${post.summary}</p>
+        </div>
+        <strong>Read</strong>
       </a>
     </article>
   `;
@@ -174,7 +177,10 @@ function renderArticle(result) {
       <p class="eyebrow">${study.title} / ${child.title}</p>
       <h2>${post.title}</h2>
       <p class="article-summary">${post.summary}</p>
-      <div class="article-meta">${post.date}</div>
+      <div class="article-meta">
+        <span>${post.date}</span>
+        <code>${post.route}</code>
+      </div>
       <div class="article-body">
         ${renderMarkdown(post.body)}
       </div>
