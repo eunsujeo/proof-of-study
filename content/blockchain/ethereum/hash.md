@@ -13,7 +13,7 @@ order: 2
 
 - 데이터를 짧은 식별자로 다룹니다.
 - 데이터가 바뀌었는지 확인합니다.
-- 여러 데이터를 하나의 루트 값으로 묶어 검증합니다.
+- 여러 데이터를 묶어 검증하는 구조의 재료가 됩니다.
 
 예를 들어 어떤 거래 데이터의 해시가 이미 알려져 있다면, 나중에 같은 거래 데이터를 다시 해시해서 결과를 비교할 수 있습니다. 값이 같으면 같은 데이터라고 볼 수 있고, 다르면 중간에 내용이 바뀐 것입니다.
 
@@ -26,9 +26,32 @@ order: 2
 - 큰 데이터를 작은 값으로 식별할 수 있습니다.
 - 전체 데이터를 매번 들고 오지 않아도 일부 데이터가 포함되었는지 검증할 수 있습니다.
 
-머클 트리나 이더리움의 Merkle Patricia Trie 같은 구조가 이 성질을 사용합니다. 여러 데이터의 해시를 다시 묶고, 그 결과를 또 해시해서 하나의 루트 값을 만듭니다. 이 루트 값이 바뀌면 아래 데이터 중 어딘가가 바뀌었다는 뜻입니다.
+머클 트리나 이더리움의 Merkle Patricia Trie 같은 구조가 이 성질을 사용합니다. 여러 데이터의 해시를 다시 묶고, 그 결과를 또 해시해서 하나의 루트 값을 만듭니다.
 
 이더리움 문서도 Merkle Patricia Trie를 결정적이고 암호학적으로 검증 가능한 구조로 설명합니다. 같은 상태는 같은 루트 해시를 만들고, 상태가 같다는 사실은 루트 해시와 그 경로의 해시를 비교해 증명할 수 있습니다.
+
+## 머클 트리로 이어지는 지점
+
+해시는 하나의 데이터만 식별할 때도 유용하지만, 여러 데이터를 묶을 때 더 중요해집니다.
+
+예를 들어 거래 4개가 있으면 먼저 각 거래를 해시할 수 있습니다.
+
+```text
+H1 = hash(Tx1)
+H2 = hash(Tx2)
+H3 = hash(Tx3)
+H4 = hash(Tx4)
+```
+
+그리고 이 해시들을 다시 묶어 하나의 대표값을 만들 수 있습니다.
+
+```text
+H12 = hash(H1 + H2)
+H34 = hash(H3 + H4)
+Root = hash(H12 + H34)
+```
+
+이 흐름을 트리 구조로 정리한 것이 머클 트리입니다. 이 글에서는 해시가 그런 구조의 재료가 된다는 점까지만 기억하면 됩니다. 전체 데이터를 받지 않고 포함 여부를 검증하는 방식은 다음 글인 `머클 트리`에서 다룹니다.
 
 ## 이더리움과 Keccak
 
@@ -48,5 +71,6 @@ NIST FIPS 202는 SHA-3 계열이 Keccak에 기반한다고 설명합니다. 이�
 
 ## 참고 자료
 
-- Ethereum.org, Merkle Patricia Trie
-- NIST FIPS 202, SHA-3 Standard
+- Ethereum.org, Merkle Patricia Trie: https://ethereum.org/developers/docs/data-structures-and-encoding/patricia-merkle-trie/
+- Ethereum.org, Light clients: https://ethereum.org/developers/docs/nodes-and-clients/light-clients/
+- NIST FIPS 202, SHA-3 Standard: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf

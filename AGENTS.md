@@ -112,6 +112,24 @@ Before finishing a code change:
 - If layout changed, inspect the page locally when possible.
 - Commit only intentional files.
 
+## Local Preview Rules
+
+Use the content-aware dev server when writing or editing study posts:
+
+```bash
+npm run dev:content
+```
+
+`npm run dev:content` watches `content/**/*.md` and restarts Astro when Markdown changes, so local preview is less likely to serve stale HTML after content edits.
+
+Use `npm run dev` only for regular UI, CSS, or Astro component work where Markdown content is not changing.
+
+Before commit or deployment, always run:
+
+```bash
+npm run build
+```
+
 ## Research References For These Guidelines
 
 These project rules are based on current public guidance from:
