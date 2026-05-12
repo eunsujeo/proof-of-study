@@ -159,6 +159,18 @@ main {
   color: #9b4f2d;
 }
 
+.post-tree li.is-active a {
+  color: #9b4f2d;
+  font-weight: 750;
+}
+
+.post-tree li.is-active a::before {
+  color: #8a6d54;
+  content: ">";
+  flex: 0 0 auto;
+  font-weight: 750;
+}
+
 .article {
   max-width: 760px;
 }
@@ -268,6 +280,21 @@ main {
   color: #20251f;
   font-size: 0.92em;
   padding: 2px 5px;
+}
+
+.article-body .mermaid {
+  background: #f7f4ed;
+  border: 1px solid #ded9cd;
+  border-radius: 6px;
+  margin: 0;
+  overflow-x: auto;
+  padding: 16px;
+}
+
+.article-body .mermaid svg {
+  display: block;
+  height: auto;
+  max-width: none;
 }
 
 @media (max-width: 680px) {

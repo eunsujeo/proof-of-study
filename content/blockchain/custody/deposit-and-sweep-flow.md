@@ -17,40 +17,33 @@ order: 3
 
 ## 큰 흐름
 
-```text
-External User Wallet
-        |
-        v
-User Deposit Address
-        |
-        v
-Blockchain Network
-        |
-        v
-Chain Watcher
-        |
-        v
-Confirmation Policy
-        |
-        v
-Ledger Credit
-        |
-        v
-Sweep Decision
-        |
-        +------------------+
-        |                  |
-        v                  v
-Gas Funding          Sweep Worker
-        |                  |
-        +--------+---------+
-                 |
-                 v
-          Omnibus Wallet
-                 |
-                 v
-        Withdrawal Wallet Pool
-        or Cold Wallet Rebalance
+```mermaid
+flowchart TD
+  external[External User Wallet]
+  deposit[User Deposit Address]
+  chain[Blockchain Network]
+  watcher[Chain Watcher]
+  confirm[Confirmation Policy]
+  credit[Ledger Credit]
+  decision{Sweep Decision}
+  gas[Gas Funding]
+  sweep[Sweep Worker]
+  omnibus[Omnibus Wallet]
+  withdrawal[Withdrawal Wallet Pool]
+  cold[Cold Wallet Rebalance]
+
+  external --> deposit
+  deposit --> chain
+  chain --> watcher
+  watcher --> confirm
+  confirm --> credit
+  credit --> decision
+  decision --> gas
+  decision --> sweep
+  gas --> sweep
+  sweep --> omnibus
+  omnibus --> withdrawal
+  omnibus --> cold
 ```
 
 입금 흐름의 최종 목표는 세 가지입니다.
@@ -90,21 +83,20 @@ provider webhook을 받을 수도 있고, 자체 node/RPC/indexer로 읽을 수�
 
 둘 중 하나만 믿기보다 두 경로를 비교하는 편이 안전합니다.
 
-```text
-Provider Webhook
-        |
-        v
-Incoming Deposit Event
+```mermaid
+flowchart TD
+  webhook[Provider Webhook]
+  event[Incoming Deposit Event]
+  watcher[Self Chain Watcher]
+  scan[Block / Receipt Scan]
+  reconcile[Reconciliation]
+  confirmed[Deposit Event Confirmed]
 
-Self Chain Watcher
-        |
-        v
-Block / Receipt Scan
-
-Reconciliation
-        |
-        v
-Deposit Event Confirmed
+  webhook --> event
+  watcher --> scan
+  event --> reconcile
+  scan --> reconcile
+  reconcile --> confirmed
 ```
 
 watcher가 확인해야 하는 값입니다.
@@ -132,18 +124,14 @@ ERC-20 입금은 ETH transfer가 아니라 token contract event로 나타납니�
 
 chain별 finality와 reorg 가능성을 고려해야 합니다.
 
-```text
-DETECTED
--> transaction 발견
-
-CONFIRMING
--> 필요한 confirmation 수 대기
-
-CONFIRMED
--> ledger credit 가능
-
-REORGED_OR_DROPPED
--> 감지된 transaction이 canonical chain에서 사라짐
+```mermaid
+stateDiagram-v2
+  [*] --> DETECTED
+  DETECTED --> CONFIRMING: transaction 발견
+  CONFIRMING --> CONFIRMED: confirmation 충족
+  CONFIRMING --> REORGED_OR_DROPPED: canonical chain에서 사라짐
+  CONFIRMED --> [*]: ledger credit 가능
+  REORGED_OR_DROPPED --> [*]
 ```
 
 confirmation 기준은 chain별로 다릅니다.
@@ -335,7 +323,7 @@ ledger가 부정확하면
 
 ## 참고 자료
 
-- Fireblocks Developer Docs, Manage Deposits at Scale
-- Fireblocks Developer Docs, Work with Gas Station
-- BitGo Developers, Fund Gas Tanks
-- Kraken Support, Differences between a crypto exchange and a crypto wallet service
+- [Fireblocks Developer Docs, Manage Deposits at Scale](https://developers.fireblocks.com/docs/manage-deposits-at-scale)
+- [Fireblocks Developer Docs, Work with Gas Station](https://developers.fireblocks.com/docs/work-with-gas-station)
+- [BitGo Developers, Fund Gas Tanks](https://developers.bitgo.com/guides/get-started/gas-tanks)
+- [Kraken Support, Differences between a crypto exchange and a crypto wallet service](https://support.kraken.com/articles/115006441267-Does-Kraken-provide-a-wallet-service-)

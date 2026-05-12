@@ -17,38 +17,30 @@ order: 4
 
 ## 전체 흐름
 
-```text
-User Withdrawal Request
-        |
-        v
-Request Validation
-        |
-        v
-Risk / Policy Check
-        |
-        v
-Ledger Hold
-        |
-        v
-Withdrawal Router
-        |
-        v
-Wallet Lane
-        |
-        v
-Signer / Custody Provider
-        |
-        v
-Broadcast
-        |
-        v
-Blockchain Confirmation
-        |
-        v
-Ledger Finalize
-        |
-        v
-User Notification
+```mermaid
+flowchart TD
+  request[User Withdrawal Request]
+  validate[Request Validation]
+  risk[Risk / Policy Check]
+  hold[Ledger Hold]
+  router[Withdrawal Router]
+  lane[Wallet Lane]
+  signer[Signer / Custody Provider]
+  broadcast[Broadcast]
+  confirm[Blockchain Confirmation]
+  finalize[Ledger Finalize]
+  notify[User Notification]
+
+  request --> validate
+  validate --> risk
+  risk --> hold
+  hold --> router
+  router --> lane
+  lane --> signer
+  signer --> broadcast
+  broadcast --> confirm
+  confirm --> finalize
+  finalize --> notify
 ```
 
 이 흐름은 하나의 함수로 묶이면 안 됩니다.
@@ -255,38 +247,29 @@ stuck
 
 ## 장애 상태 전이
 
-```text
-REQUESTED
-   |
-   v
-HELD
-   |
-   +--> POLICY_REVIEW
-   |
-   v
-ROUTED
-   |
-   +--> WAITING_FOR_GAS
-   +--> WAITING_FOR_LIQUIDITY
-   |
-   v
-SUBMITTED
-   |
-   +--> PROVIDER_TIMEOUT
-   +--> PROVIDER_REJECTED
-   |
-   v
-BROADCASTED
-   |
-   +--> STUCK
-   +--> REPLACED
-   +--> DROPPED
-   |
-   v
-CONFIRMED
-   |
-   v
-FINALIZED
+```mermaid
+stateDiagram-v2
+  [*] --> REQUESTED
+  REQUESTED --> HELD
+  HELD --> POLICY_REVIEW
+  POLICY_REVIEW --> HELD: approved
+  HELD --> ROUTED
+  ROUTED --> WAITING_FOR_GAS
+  ROUTED --> WAITING_FOR_LIQUIDITY
+  WAITING_FOR_GAS --> ROUTED: funded
+  WAITING_FOR_LIQUIDITY --> ROUTED: rebalanced
+  ROUTED --> SUBMITTED
+  SUBMITTED --> PROVIDER_TIMEOUT
+  SUBMITTED --> PROVIDER_REJECTED
+  PROVIDER_TIMEOUT --> SUBMITTED: idempotent retry
+  SUBMITTED --> BROADCASTED
+  BROADCASTED --> STUCK
+  STUCK --> REPLACED
+  STUCK --> DROPPED
+  REPLACED --> BROADCASTED
+  BROADCASTED --> CONFIRMED
+  CONFIRMED --> FINALIZED
+  FINALIZED --> [*]
 ```
 
 상태를 세밀하게 나누는 이유는 운영자가 다음 조치를 알기 위해서입니다.
@@ -337,8 +320,8 @@ stuck transaction은 해당 wallet lane만 멈춰야 한다.
 
 ## 참고 자료
 
-- Fireblocks Developer Docs, Manage Withdrawals at Scale
-- Fireblocks Developer Docs, Create a new transaction
-- BitGo Developers, Withdraw Overview
-- Circle Docs, Wallet Nonce Management
-- Ethereum.org, Transactions
+- [Fireblocks Developer Docs, Manage Withdrawals at Scale](https://developers.fireblocks.com/docs/manage-withdrawals-at-scale)
+- [Fireblocks Developer Docs, Create a new transaction](https://developers.fireblocks.com/api-reference/transactions/create-a-new-transaction)
+- [BitGo Developers, Withdraw Overview](https://developers.bitgo.com/docs/withdraw-overview)
+- [Circle Docs, Wallet Nonce Management](https://developers.circle.com/cpn/concepts/wallet-nonce-management)
+- [Ethereum.org, Transactions](https://ethereum.org/en/developers/docs/transactions/)

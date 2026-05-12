@@ -22,5 +22,39 @@ const { description = "공부한 내용을 주제별 Markdown으로 정리하는
     <main>
       <slot />
     </main>
+
+    <script>
+      const blocks = document.querySelectorAll('pre[data-language="mermaid"]');
+
+      blocks.forEach((block) => {
+        const diagram = document.createElement("div");
+        diagram.className = "mermaid";
+        diagram.textContent = block.textContent ?? "";
+        block.replaceWith(diagram);
+      });
+
+      if (blocks.length > 0) {
+        const { default: mermaid } = await import("mermaid");
+
+        mermaid.initialize({
+          fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
+          securityLevel: "strict",
+          startOnLoad: false,
+          theme: "base",
+          themeVariables: {
+            background: "#faf9f5",
+            primaryColor: "#efebe2",
+            primaryTextColor: "#181a17",
+            primaryBorderColor: "#cfc7b8",
+            lineColor: "#716a5f",
+            secondaryColor: "#f7f4ed",
+            tertiaryColor: "#ffffff",
+            fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif"
+          }
+        });
+
+        mermaid.run();
+      }
+    </script>
   </body>
 </html>

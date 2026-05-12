@@ -7,7 +7,7 @@ import { studies } from "../lib/content.js";
   <nav class="study-tree" aria-label="스터디 목차">
     {
       studies.map((study) => (
-        <details class="study-node">
+        <details class="study-node" data-node-id={`study:${study.id}`}>
           <summary>
             <span class="summary-title">{study.title}</span>
             <small>{study.description}</small>
@@ -15,7 +15,7 @@ import { studies } from "../lib/content.js";
 
           <div class="track-tree">
             {study.children.map((child) => (
-              <details class="track-node">
+              <details class="track-node" data-node-id={`track:${study.id}/${child.id}`}>
                 <summary>
                   <span class="summary-title">{child.title}</span>
                   <small>{child.description}</small>
@@ -24,7 +24,7 @@ import { studies } from "../lib/content.js";
                 <ol class="post-tree">
                   {child.posts.map((post) => (
                     <li>
-                      <a href={post.route}>
+                      <a href={post.route} data-route={post.route}>
                         <span>{post.title}</span>
                         <small>{post.date}</small>
                       </a>
@@ -38,4 +38,85 @@ import { studies } from "../lib/content.js";
       ))
     }
   </nav>
+
+  <script>
+    const storageKey = "proof-of-study:toc-state";
+    const tree = document.querySelector(".study-tree");
+
+    function readState() {
+      try {
+        return JSON.parse(sessionStorage.getItem(storageKey) ?? "{}");
+      } catch {
+        return {};
+      }
+    }
+
+    function writeState(state) {
+      sessionStorage.setItem(storageKey, JSON.stringify(state));
+    }
+
+    function getOpenNodeIds() {
+      return [...document.querySelectorAll("details[data-node-id][open]")].map(
+        (node) => node.dataset.nodeId
+      );
+    }
+
+    function saveOpenState() {
+      const state = readState();
+      writeState({
+        ...state,
+        openNodeIds: getOpenNodeIds()
+      });
+    }
+
+    function restoreState() {
+      const state = readState();
+      const openNodeIds = new Set(state.openNodeIds ?? []);
+      const activeRoute = state.activeRoute;
+
+      document.querySelectorAll("details[data-node-id]").forEach((node) => {
+        node.open = openNodeIds.has(node.dataset.nodeId);
+      });
+
+      if (!activeRoute) return;
+
+      const activeLink = document.querySelector(`[data-route="${activeRoute}"]`);
+      if (!(activeLink instanceof HTMLAnchorElement)) return;
+
+      activeLink.setAttribute("aria-current", "page");
+      activeLink.closest("li")?.classList.add("is-active");
+
+      let parent = activeLink.parentElement;
+      while (parent) {
+        if (parent instanceof HTMLDetailsElement && parent.dataset.nodeId) {
+          parent.open = true;
+        }
+        parent = parent.parentElement;
+      }
+
+      requestAnimationFrame(() => {
+        activeLink.scrollIntoView({ block: "center" });
+      });
+    }
+
+    restoreState();
+
+    tree?.addEventListener("toggle", (event) => {
+      if (event.target instanceof HTMLDetailsElement) {
+        saveOpenState();
+      }
+    }, true);
+
+    document.querySelectorAll("[data-route]").forEach((link) => {
+      link.addEventListener("click", () => {
+        if (!(link instanceof HTMLAnchorElement)) return;
+
+        writeState({
+          ...readState(),
+          activeRoute: link.dataset.route,
+          openNodeIds: getOpenNodeIds()
+        });
+      });
+    });
+  </script>
 </BaseLayout>

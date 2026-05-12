@@ -141,13 +141,16 @@ withdrawal wallet pool은 출금 속도를 위해 운영 float을 들고 있습�
 
 그래서 omnibus wallet과 withdrawal wallet 사이에 리밸런싱이 필요합니다.
 
-```text
-omnibus wallet
--> withdrawal wallet pool
--> 사용자 출금
+```mermaid
+flowchart TD
+  omnibus[Omnibus Wallet]
+  pool[Withdrawal Wallet Pool]
+  user[User Withdrawal]
+  cold[Cold Wallet]
 
-cold wallet
-<-> omnibus wallet
+  omnibus --> pool
+  pool --> user
+  omnibus <--> cold
 ```
 
 리밸런싱 기준은 두 가지입니다.
@@ -162,17 +165,23 @@ cold wallet
 
 예시입니다.
 
-```text
-Ethereum USDC Withdrawal Wallet 1
+```mermaid
+flowchart TD
+  wallet[Ethereum USDC Withdrawal Wallet 1]
+  tokenLow{USDC < minimum token float?}
+  gasLow{ETH < minimum gas float?}
+  tokenHigh{USDC > maximum token float?}
+  omnibus[Omnibus Wallet]
+  gas[Provider Gas Funding<br/>or Treasury Gas Wallet]
 
-USDC balance < minimum token float
--> omnibus에서 USDC 보충
-
-ETH balance < minimum gas float
--> provider gas funding 또는 treasury gas wallet에서 ETH 보충
-
-USDC balance > maximum token float
--> omnibus로 회수
+  wallet --> tokenLow
+  wallet --> gasLow
+  wallet --> tokenHigh
+  tokenLow -->|yes| omnibus
+  omnibus -->|USDC top-up| wallet
+  gasLow -->|yes| gas
+  gas -->|ETH top-up| wallet
+  tokenHigh -->|yes| omnibus
 ```
 
 ## wallet 선택에 gas를 포함한다
@@ -272,9 +281,9 @@ Rebalance tx confirming > 20분
 
 ## 참고 자료
 
-- Fireblocks Developer Docs, Work with Gas Station
-- Fireblocks Developer Docs, Configure Gas Station Values
-- Fireblocks Developer Docs, Set Auto Fueling Property
-- Fireblocks Developer Docs, Create a new transaction
-- BitGo Developers, Ethereum Gas Tank
-- Kraken Support, Differences between a crypto exchange and a crypto wallet service
+- [Fireblocks Developer Docs, Work with Gas Station](https://developers.fireblocks.com/docs/work-with-gas-station)
+- [Fireblocks Developer Docs, Configure Gas Station Values](https://developers.fireblocks.com/docs/configure-gas-station-values)
+- [Fireblocks Developer Docs, Set Auto Fueling Property](https://developers.fireblocks.com/docs/set-auto-fueling-property)
+- [Fireblocks Developer Docs, Create a new transaction](https://developers.fireblocks.com/api-reference/transactions/create-a-new-transaction)
+- [BitGo Developers, Ethereum](https://developers.bitgo.com/coins/ethereum)
+- [Kraken Support, Differences between a crypto exchange and a crypto wallet service](https://support.kraken.com/articles/115006441267-Does-Kraken-provide-a-wallet-service-)

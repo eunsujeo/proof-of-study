@@ -210,18 +210,19 @@ RECOVERED
 
 출금 요청이 9개 들어왔다고 가정합니다.
 
-```text
-요청:
-W1 W2 W3 W4 W5 W6 W7 W8 W9
+```mermaid
+flowchart LR
+  subgraph walletA[Wallet A lane]
+    A1[W1 / nonce 100] --> A2[W4 / nonce 101] --> A3[W7 / nonce 102]
+  end
 
-Wallet A lane:
-W1 -> W4 -> W7
+  subgraph walletB[Wallet B lane]
+    B1[W2 / nonce 55] --> B2[W5 / nonce 56] --> B3[W8 / nonce 57]
+  end
 
-Wallet B lane:
-W2 -> W5 -> W8
-
-Wallet C lane:
-W3 -> W6 -> W9
+  subgraph walletC[Wallet C lane]
+    C1[W3 / nonce 8] --> C2[W6 / nonce 9] --> C3[W9 / nonce 10]
+  end
 ```
 
 각 wallet 안에서는 nonce 순서가 보존됩니다.
@@ -495,13 +496,13 @@ self-managed signer를 쓸 경우 nonce reservation DB를 어느 저장소에 �
 
 ## 참고 자료
 
-- Ethereum.org, JSON-RPC API, `eth_getTransactionCount`
-- Ethereum.org, Transactions
-- Ethereum Execution APIs, `eth_getTransactionCount`
-- Circle Docs, Wallet Nonce Management
-- Chainstack, Ethereum nonce management: preventing stuck transactions
-- BitGo Developers, Resolve Nonce Holes
-- Fireblocks Developer Docs, Create a new transaction
-- Fireblocks Developer Docs, Boost Transactions
-- Fireblocks Developer Docs, Manage Withdrawals at Scale
-- Coinbase Blog, A Dedicated Architecture for Solana at Coinbase
+- [Ethereum.org, JSON-RPC API, `eth_getTransactionCount`](https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_gettransactioncount)
+- [Ethereum.org, Transactions](https://ethereum.org/en/developers/docs/transactions/)
+- [Ethereum Execution APIs, `eth_getTransactionCount`](https://ethereum.github.io/execution-apis/api/methods/eth_getTransactionCount)
+- [Circle Docs, Wallet Nonce Management](https://developers.circle.com/cpn/concepts/wallet-nonce-management)
+- [Chainstack, Ethereum nonce management: preventing stuck transactions](https://chainstack.com/ethereum-nonce-management/)
+- [BitGo Developers, Resolve Nonce Holes](https://developers.bitgo.com/docs/withdraw-nonce-holes)
+- [Fireblocks Developer Docs, Create a new transaction](https://developers.fireblocks.com/api-reference/transactions/create-a-new-transaction)
+- [Fireblocks Developer Docs, Boost/replace transaction parameters](https://developers.fireblocks.com/api-reference/transactions/create-a-new-transaction)
+- [Fireblocks Developer Docs, Manage Withdrawals at Scale](https://developers.fireblocks.com/docs/manage-withdrawals-at-scale)
+- [Coinbase Blog, A Dedicated Architecture for Solana at Coinbase](https://www.coinbase.com/blog/a-dedicated-architecture-for-solana-at-coinbase)
