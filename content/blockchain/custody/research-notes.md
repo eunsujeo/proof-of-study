@@ -312,13 +312,13 @@ Tenderly는 withdrawal transaction 자체의 실행 가능성을 확인하는 �
 
 ### 아직 검증할 점
 
-시뮬레이션은 세 층으로 나눠야 합니다.
+검증은 세 층으로 나눠야 합니다.
 
 ```text
-로컬 queue simulation
+로컬 queue 모델
 -> routing, pending depth, stuck wallet 영향 확인
 
-EVM transaction simulation
+EVM transaction 검증
 -> transfer 성공/실패, gas, balance 변화 확인
 
 provider sandbox/testnet
@@ -345,18 +345,17 @@ Travel Rule / AML hold와 출금 queue의 연결
 
 ## 참고 자료
 
-- Fireblocks Developer Docs, Manage Withdrawals at Scale
-- Fireblocks Developer Docs, Manage Deposits at Scale
-- Fireblocks Developer Docs, Work with Gas Station
-- Fireblocks Developer Docs, Create a new transaction
-- Fireblocks Developer Docs, API Co-Signers Architecture Overview
-- BitGo Developers, Withdraw Overview
-- BitGo Developers, Resolve Nonce Holes
-- BitGo Developers, Fund Gas Tanks
-- Circle Docs, Wallet Nonce Management
-- Chainstack, Ethereum nonce management: preventing stuck transactions
-- Ethereum Execution APIs, `eth_getTransactionCount`
-- Coinbase Blog, A Dedicated Architecture for Solana at Coinbase
-- Coinbase Blog, Retrospective: Solana Sends & Receives
-- Kraken Support, Differences between a crypto exchange and a crypto wallet service
-- Tenderly Docs, Simulation API
+- [Fireblocks Developer Docs, Manage Withdrawals at Scale](https://developers.fireblocks.com/docs/manage-withdrawals-at-scale)
+- [Fireblocks Developer Docs, Manage Deposits at Scale](https://developers.fireblocks.com/docs/manage-deposits-at-scale)
+- [Fireblocks Developer Docs, Work with Gas Station](https://developers.fireblocks.com/docs/work-with-gas-station)
+- [Fireblocks Developer Docs, Create a new transaction](https://developers.fireblocks.com/api-reference/transactions/create-a-new-transaction)
+- [Fireblocks Developer Docs, API Co-Signers Architecture Overview](https://developers.fireblocks.com/docs/cosigner-architecture-overview)
+- [BitGo Developers, Withdraw Overview](https://developers.bitgo.com/docs/withdraw-overview)
+- [BitGo Developers, Resolve Nonce Holes](https://developers.bitgo.com/docs/withdraw-nonce-holes)
+- [BitGo Developers, Fund Gas Tanks](https://developers.bitgo.com/guides/get-started/gas-tanks)
+- [Circle Docs, Wallet Nonce Management](https://developers.circle.com/cpn/concepts/wallet-nonce-management)
+- [Chainstack, Ethereum nonce management: preventing stuck transactions](https://chainstack.com/ethereum-nonce-management/)
+- [Ethereum Execution APIs, `eth_getTransactionCount`](https://ethereum.github.io/execution-apis/api/methods/eth_getTransactionCount)
+- [Coinbase Blog, A Dedicated Architecture for Solana at Coinbase](https://www.coinbase.com/blog/a-dedicated-architecture-for-solana-at-coinbase)
+- [Kraken Support, Differences between a crypto exchange and a crypto wallet service](https://support.kraken.com/articles/115006441267-Does-Kraken-provide-a-wallet-service-)
+- [Tenderly Docs, Simulation API](https://docs.tenderly.co/simulations/simulation-api)

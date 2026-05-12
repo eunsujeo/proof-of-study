@@ -21,7 +21,6 @@ BitGo, Circle 같은 provider를 비교하고, 필요하면 자체 signer 구조
 -> 출금 흐름
 -> EVM nonce 관리
 -> gas와 유동성
--> 시뮬레이션
 -> 프로덕션 인프라 체크리스트
 ```
 

@@ -2,7 +2,7 @@
 title: 프로덕션 인프라 체크리스트
 date: 2026-05-06
 summary: 수탁형 지갑을 프로덕션에서 운영하기 위해 필요한 signer, node, ledger, watcher, monitoring, runbook 기준을 정리합니다.
-order: 8
+order: 7
 ---
 
 이 글은 최종 설계안이 아닙니다.
@@ -116,7 +116,7 @@ Fireblocks 문서는 EVM/ECDSA 계열 steady-state 1 TPS에 5-6 withdrawal walle
 
 이 숫자는 그대로 복사할 최종값이 아니라 초기 검토 기준입니다.
 
-우리 시스템에서는 시뮬레이션과 실제 트래픽으로 조정해야 합니다.
+우리 시스템에서는 검증 환경과 실제 트래픽으로 조정해야 합니다.
 
 확인할 항목입니다.
 
@@ -176,22 +176,20 @@ webhook은 편리하지만 단일 진실 공급원이 아닙니다.
 
 watcher와 reconciliation이 별도로 있어야 합니다.
 
-```text
-Provider Webhook
-        |
-        v
-Event Store
-        |
-        v
-State Machine
+```mermaid
+flowchart TD
+  webhook[Provider Webhook]
+  store[Event Store]
+  machine[State Machine]
+  watcher[Chain Watcher]
+  scan[Receipt / Balance / Block Scan]
+  reconcile[Reconciliation Job]
 
-Chain Watcher
-        |
-        v
-Receipt / Balance / Block Scan
-        |
-        v
-Reconciliation Job
+  webhook --> store
+  store --> machine
+  watcher --> scan
+  scan --> reconcile
+  machine --> reconcile
 ```
 
 확인할 항목입니다.
@@ -304,7 +302,81 @@ support / incident 대응
 
 이 비교표는 리서치가 진행되면서 별도 문서로 확장할 수 있습니다.
 
-## 10. 아직 결정하지 않은 것
+## 10. Provider 검증 항목
+
+provider 문서에 기능이 있다고 해서 바로 프로덕션 설계에 넣으면 안 됩니다.
+
+먼저 낮은 환경에서 실제 상태 전이와 실패 응답을 확인해야 합니다.
+
+Fireblocks 기준으로도 Developer Sandbox, Testnet, Mainnet은 목적과 기능 범위가 다릅니다.
+
+따라서 sandbox/testnet 결과는 API 사용법을 확인하는 자료이지, mainnet 처리량이나 운영 정책을 그대로 보장하는 자료가 아닙니다.
+
+확인할 항목입니다.
+
+```text
+workspace 환경별 지원 기능
+transaction 생성 API의 중복 방지 방식
+동일 idempotency key 재요청 응답
+transaction status와 subStatus 종류
+webhook payload와 재전송 정책
+webhook 누락 시 API 조회 복구 가능성
+provider queue가 쌓이는 조건
+signer / co-signer callback 지연 시 상태 변화
+gas funding 실패가 어떤 상태로 노출되는지
+RBF / boost / drop 사용 가능 조건
+rate limit과 retry-after 정보
+```
+
+우리 시스템의 기준으로 바꿔 쓰면 아래처럼 봅니다.
+
+```text
+provider idempotency
+-> 같은 출금 요청을 두 번 만들지 않는가?
+
+provider status model
+-> 내부 withdrawal 상태로 안정적으로 매핑할 수 있는가?
+
+provider webhook
+-> 빠른 알림일 뿐, 최종 truth로 쓰지 않아도 되는가?
+
+provider signer
+-> 자동 서명 장애가 출금 queue에 어떻게 드러나는가?
+
+provider gas funding
+-> gas 부족을 실패가 아니라 운영 대기 상태로 분리할 수 있는가?
+
+provider nonce handling
+-> 같은 source wallet에서 stuck transaction이 생겼을 때 lane을 식별할 수 있는가?
+```
+
+검증 결과는 provider 이름으로만 기록하지 않습니다.
+
+아래처럼 우리 설계 개념에 매핑합니다.
+
+```text
+Fireblocks externalTxId
+-> provider idempotency key
+
+Fireblocks status / subStatus
+-> provider transaction state
+
+Fireblocks transaction webhook
+-> provider event stream
+
+Fireblocks Co-Signer
+-> policy-controlled automated signer
+
+Fireblocks Gas Station
+-> provider gas funding
+
+Fireblocks replace / drop
+-> stuck transaction recovery
+```
+
+이렇게 기록해야 provider를 바꾸더라도 체크리스트가 유지됩니다.
+
+## 11. 아직 결정하지 않은 것
 
 지금 단계에서 결정하지 않습니다.
 
@@ -319,30 +391,38 @@ multi-region active-active 여부
 self-managed signer 여부
 ```
 
-이 값은 리서치와 시뮬레이션 후 결정합니다.
+이 값은 리서치와 검증 환경에서 확인한 결과를 보고 결정합니다.
 
 ## 다음 단계
 
-다음 작업은 시뮬레이션입니다.
+다음 작업은 provider 검증 결과를 같은 형식으로 기록할 표를 만드는 것입니다.
 
-먼저 작은 로컬 모델로 아래를 비교합니다.
+표에는 아래 항목이 들어가야 합니다.
 
 ```text
-1 wallet vs 5 wallets vs 10 wallets
-stuck rate 0% vs 1% vs 5%
-confirmation 15초 vs 60초 vs 300초
-gas shortage 0% vs 2%
-provider timeout 0% vs 1%
+provider 이름
+검증 환경
+확인한 API / 기능
+관찰한 status / error
+우리 상태 모델 매핑
+남은 리스크
+mainnet에서 다시 확인할 항목
 ```
 
-그 다음 provider sandbox/testnet에서 실제 API 상태 전이를 확인합니다.
+그 다음 실제 후보 provider의 sandbox/testnet 접근 가능 여부를 확인합니다.
 
 ## 참고 자료
 
-- Fireblocks Developer Docs, Manage Withdrawals at Scale
-- Fireblocks Developer Docs, API Co-Signers Architecture Overview
-- Fireblocks Developer Docs, Multiple Co-signers High Availability
-- BitGo Developers, Withdraw Overview
-- BitGo Developers, Fund Gas Tanks
-- Circle Docs, Wallet Nonce Management
-- Ethereum Execution APIs, `eth_getTransactionCount`
+- [Fireblocks Developer Docs, Manage Withdrawals at Scale](https://developers.fireblocks.com/docs/manage-withdrawals-at-scale)
+- [Fireblocks Developer Docs, Workspace Comparison](https://developers.fireblocks.com/docs/workspace-environments)
+- [Fireblocks Developer Docs, Create Transactions](https://developers.fireblocks.com/reference/create-transactions)
+- [Fireblocks Developer Docs, API Idempotency](https://developers.fireblocks.com/reference/api-idempotency)
+- [Fireblocks Developer Docs, Transaction Statuses](https://developers.fireblocks.com/reference/statuses)
+- [Fireblocks Developer Docs, Transaction Webhooks](https://developers.fireblocks.com/reference/transaction-webhooks)
+- [Fireblocks Developer Docs, Work with Gas Station](https://developers.fireblocks.com/docs/work-with-gas-station)
+- [Fireblocks Developer Docs, API Co-Signers Architecture Overview](https://developers.fireblocks.com/docs/cosigner-architecture-overview)
+- [Fireblocks Developer Docs, Multiple Co-signers High Availability](https://developers.fireblocks.com/docs/multiple-cosigners-high-availability)
+- [BitGo Developers, Withdraw Overview](https://developers.bitgo.com/docs/withdraw-overview)
+- [BitGo Developers, Fund Gas Tanks](https://developers.bitgo.com/guides/get-started/gas-tanks)
+- [Circle Docs, Wallet Nonce Management](https://developers.circle.com/cpn/concepts/wallet-nonce-management)
+- [Ethereum Execution APIs, `eth_getTransactionCount`](https://ethereum.github.io/execution-apis/api/methods/eth_getTransactionCount)

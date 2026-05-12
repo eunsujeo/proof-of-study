@@ -25,56 +25,38 @@ chain watcher와 reconciliation
 
 ## 기준 구조
 
-```text
-                        +----------------------+
-                        |      Admin / Ops     |
-                        | limits, policy, runbook
-                        +----------+-----------+
-                                   |
-                                   v
-+-------------+     +--------------+---------------+
-| User / App  | --> |      Wallet Backend          |
-+-------------+     | request API, risk, routing   |
-                    +------+----------+------------+
-                           |          |
-                           v          v
-                    +------+--+   +---+----------------+
-                    | Ledger  |   | Policy / Risk      |
-                    | double  |   | address, AML, hold |
-                    | entry   |   +--------------------+
-                    +----+----+
-                         |
-      +------------------+------------------+
-      |                                     |
-      v                                     v
-+-----+----------------+          +---------+----------+
-| Chain Watcher        |          | Withdrawal Router  |
-| deposits, receipts   |          | wallet selection   |
-+-----+----------------+          +---------+----------+
-      |                                     |
-      v                                     v
-+-----+----------------+          +---------+----------+
-| Deposit Addresses    |          | Withdrawal Wallet  |
-| user mapping         |          | Pool / Nonce Lanes |
-+-----+----------------+          +---------+----------+
-      |                                     |
-      v                                     v
-+-----+----------------+          +---------+----------+
-| Sweep Worker         |          | Signer / Provider  |
-| to omnibus           |          | MPC/HSM/API        |
-+-----+----------------+          +---------+----------+
-      |                                     |
-      v                                     v
-+-----+----------------+          +---------+----------+
-| Omnibus Wallet       | <------> | Blockchain Network |
-| central liquidity    |          | mempool, blocks    |
-+-----+----------------+          +---------+----------+
-      |
-      v
-+-----+----------------+
-| Cold Wallet          |
-| long-term storage    |
-+----------------------+
+```mermaid
+flowchart TD
+  admin[Admin / Ops<br/>limits, policy, runbook]
+  user[User / App]
+  backend[Wallet Backend<br/>request API, risk, routing]
+  ledger[Ledger<br/>double entry]
+  policy[Policy / Risk<br/>address, AML, hold]
+  watcher[Chain Watcher<br/>deposits, receipts]
+  deposit[Deposit Addresses<br/>user mapping]
+  sweep[Sweep Worker<br/>to omnibus]
+  omnibus[Omnibus Wallet<br/>central liquidity]
+  cold[Cold Wallet<br/>long-term storage]
+  router[Withdrawal Router<br/>wallet selection]
+  pool[Withdrawal Wallet Pool<br/>nonce lanes]
+  signer[Signer / Provider<br/>MPC, HSM, API]
+  chain[Blockchain Network<br/>mempool, blocks]
+
+  admin --> backend
+  user --> backend
+  backend --> ledger
+  backend --> policy
+  ledger --> watcher
+  ledger --> router
+  watcher --> deposit
+  deposit --> sweep
+  sweep --> omnibus
+  omnibus --> cold
+  router --> pool
+  pool --> signer
+  signer --> chain
+  chain --> watcher
+  omnibus <--> chain
 ```
 
 이 구조에서 blockchain은 외부 시스템입니다.
@@ -329,14 +311,14 @@ Co-Signer
 EVM nonce allocator
 gas와 liquidity threshold
 provider별 기능 비교
-장애 시뮬레이션
+장애 검증 항목
 프로덕션 인프라 체크리스트
 ```
 
 ## 참고 자료
 
-- Kraken Support, Differences between a crypto exchange and a crypto wallet service
-- Fireblocks Developer Docs, Manage Deposits at Scale
-- Fireblocks Developer Docs, Manage Withdrawals at Scale
-- BitGo Developers, Withdraw Overview
-- Circle Docs, Wallet Nonce Management
+- [Kraken Support, Differences between a crypto exchange and a crypto wallet service](https://support.kraken.com/articles/115006441267-Does-Kraken-provide-a-wallet-service-)
+- [Fireblocks Developer Docs, Manage Deposits at Scale](https://developers.fireblocks.com/docs/manage-deposits-at-scale)
+- [Fireblocks Developer Docs, Manage Withdrawals at Scale](https://developers.fireblocks.com/docs/manage-withdrawals-at-scale)
+- [BitGo Developers, Withdraw Overview](https://developers.bitgo.com/docs/withdraw-overview)
+- [Circle Docs, Wallet Nonce Management](https://developers.circle.com/cpn/concepts/wallet-nonce-management)

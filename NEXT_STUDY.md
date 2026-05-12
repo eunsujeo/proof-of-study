@@ -9,7 +9,8 @@
 ```text
 블록체인
 ├── 이더리움
-└── 수탁형 지갑
+├── 수탁형 지갑
+└── 국내 규제와 수탁
 ```
 
 AI 섹션은 유지하지만, 당분간 작성 우선순위에서는 제외합니다.
@@ -101,8 +102,26 @@ content/blockchain/custody/deposit-and-sweep-flow.md
 content/blockchain/custody/withdrawal-flow.md
 content/blockchain/custody/evm-nonce-management.md
 content/blockchain/custody/gas-and-liquidity.md
-content/blockchain/custody/simulation-plan.md
 content/blockchain/custody/production-infra-checklist.md
+```
+
+국내 규제와 수탁 챕터는 딥리서치 원문을 학습용 문서로 재구성한 트랙입니다.
+
+원문은 아래 파일에 보관합니다.
+
+```text
+content/blockchain/deep-research-report.md
+```
+
+사이트에는 아래 학습 문서를 노출합니다.
+
+```text
+content/blockchain/korea-custody-regulation/regulatory-map.md
+content/blockchain/korea-custody-regulation/custody-obligations.md
+content/blockchain/korea-custody-regulation/fireblocks-control-mapping.md
+content/blockchain/korea-custody-regulation/compliance-architecture.md
+content/blockchain/korea-custody-regulation/operations-audit-checklist.md
+content/blockchain/korea-custody-regulation/residual-risks.md
 ```
 
 학습과 설계 준비 흐름은 아래 순서입니다.
@@ -114,8 +133,18 @@ content/blockchain/custody/production-infra-checklist.md
 4. 출금 흐름과 상태 전이를 확인한다
 5. EVM nonce lane 설계를 깊게 본다
 6. gas와 liquidity 운영을 분리해서 본다
-7. 시뮬레이션으로 병목과 장애 상황을 검토한다
-8. 프로덕션 인프라 체크리스트로 provider / 자체 구축 판단 기준을 만든다
+7. 프로덕션 인프라 체크리스트로 provider / 자체 구축 판단 기준을 만든다
+```
+
+국내 규제와 수탁 챕터는 아래 순서로 읽습니다.
+
+```text
+1. 규제 지도
+2. 수탁 의무와 설계 요구사항
+3. Fireblocks 통제 매핑
+4. 컴플라이언스 아키텍처
+5. 운영과 감사 체크리스트
+6. 잔여 리스크
 ```
 
 ## Why This Topic Is Next
@@ -165,9 +194,12 @@ provider 기능명은 일반 개념으로 매핑한다.
 입금/sweep 흐름에서 실제 서비스와 다른 가정이 있는가?
 출금 상태 전이에 빠진 상태가 있는가?
 nonce lane을 직접 구현하는 코드 예제가 필요한가?
-시뮬레이션은 문서 표로 할까, 작은 로컬 스크립트로 할까?
-사용할 custody provider 후보와 Sandbox/Testnet 접근 권한이 있는가?
+사용할 custody provider 후보와 sandbox/testnet 접근 권한이 있는가?
+provider 검증 결과를 어떤 표준 형식으로 기록할 것인가?
 프로덕션 인프라에서 provider를 쓸지 자체 signer까지 검토할지 결정해야 하는가?
+국내 규제와 수탁 챕터에서 법무/컴플라이언스 확인이 필요한 항목은 무엇인가?
+Fireblocks 매핑을 다른 custody provider에도 확장할 것인가?
+원문 deep research를 나중에 별도 appendix로 노출할 것인가?
 ```
 
 ## Research Sources To Check First
@@ -187,6 +219,8 @@ Fireblocks Developer Docs - Manage Withdrawals at Scale
 Fireblocks Developer Docs - Gas Station
 Fireblocks Developer Docs - Create Transaction
 Fireblocks Developer Docs - Workspace Environments
+Fireblocks Developer Docs - Transaction Statuses
+Fireblocks Developer Docs - Transaction Webhooks
 Fireblocks Developer Docs - API Co-Signer HA
 BitGo Developers - nonce holes
 BitGo Developers - gas tank
@@ -196,6 +230,11 @@ Coinbase Engineering Blog - Solana sends/receives retrospective
 Kraken Support - exchange wallet and hot wallet withdrawal behavior
 BitGo Developers - withdraw flow and Ethereum gas tank
 Tenderly Documentation - Simulation API
+금융위원회 - 가상자산이용자보호법 시행 보도자료
+금융위원회 - 가상자산업감독규정 제정 고시
+특정 금융거래정보의 보고 및 이용 등에 관한 법률
+KISA - ISMS-P 인증기준 안내
+KISA - 가상자산사업자용 ISMS 세부점검항목
 ```
 
 공식 문서에서 확인한 사실만 본문에 단정적으로 씁니다. 이해를 돕기 위한 비유나 단순화는 단순화라고 표시합니다.

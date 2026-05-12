@@ -112,21 +112,21 @@ nonce tracker는 단순한 counter가 아닙니다.
 
 동시 접근을 직렬화해야 합니다.
 
-```text
-Withdrawal Worker A
-        |
-        v
-Nonce Tracker for Wallet A
-        |
-        +--> reserve nonce 42
+```mermaid
+sequenceDiagram
+  participant A as Withdrawal Worker A
+  participant B as Withdrawal Worker B
+  participant T as Nonce Tracker for Wallet A
+  participant S as Durable Store
 
-Withdrawal Worker B
-        |
-        v
-Nonce Tracker for Wallet A
-        |
-        +--> wait
-        +--> reserve nonce 43
+  A->>T: reserve nonce
+  T->>S: lock lane and read next nonce
+  S-->>T: next nonce = 42
+  T-->>A: reserved nonce 42
+  B->>T: reserve nonce
+  T->>S: wait for lane lock
+  S-->>T: next nonce = 43
+  T-->>B: reserved nonce 43
 ```
 
 핵심은 worker가 직접 RPC에서 pending nonce를 읽고 결정하지 않는 것입니다.
@@ -367,8 +367,8 @@ EVM 출금 Nonce 관리
 출금 흐름
 -> signer service, idempotency, provider timeout
 
-시뮬레이션 계획
--> stuckRate, providerApiLatency, unknown state
+운영 검증 항목
+-> stuck lane, provider API latency, unknown state
 
 프로덕션 인프라 체크리스트
 -> signer service, durable storage, L2 sequencer health
@@ -388,6 +388,6 @@ replacement fee bump 정책을 자동화할 것인가?
 
 ## 참고 자료
 
-- Chainstack, Ethereum nonce management: preventing stuck transactions
-- Ethereum Execution APIs, `eth_getTransactionCount`
-- Ethereum.org, Transactions
+- [Chainstack, Ethereum nonce management: preventing stuck transactions](https://chainstack.com/ethereum-nonce-management/)
+- [Ethereum Execution APIs, `eth_getTransactionCount`](https://ethereum.github.io/execution-apis/api/methods/eth_getTransactionCount)
+- [Ethereum.org, Transactions](https://ethereum.org/en/developers/docs/transactions/)
