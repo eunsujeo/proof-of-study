@@ -4,12 +4,14 @@
 
 ## Current Focus
 
-현재 우선순위는 블록체인 / 수탁형 지갑입니다.
+현재 우선순위는 블록체인 / 솔라나입니다.
 
 ```text
 블록체인
 ├── 이더리움
+├── 솔라나
 ├── 수탁형 지갑
+├── 온체인 데이터 읽기와 인덱싱
 └── 국내 규제와 수탁
 ```
 
@@ -70,11 +72,11 @@ Solidity Counter 예시: 가장 작은 컨트랙트 코드로 storage, function,
 이더리움 입문 퀴즈: 해시부터 배포와 호출까지 입문 개념을 질문으로 점검
 ```
 
-## Current Custody Track
+## Completed Custody Track
 
 이더리움 입문 실습은 보류합니다.
 
-현재 우선순위는 수탁형 지갑의 출금 nonce 관리와 프로덕션 인프라 설계 준비입니다.
+수탁형 지갑 챕터는 1차 완료로 봅니다.
 
 Fireblocks는 사용할 수 있는 custody provider 후보 중 하나로 봅니다.
 
@@ -136,6 +138,16 @@ content/blockchain/korea-custody-regulation/residual-risks.md
 7. 프로덕션 인프라 체크리스트로 provider / 자체 구축 판단 기준을 만든다
 ```
 
+남은 항목은 블로그 학습 글이라기보다 실제 provider 검증 또는 프로젝트 의사결정입니다.
+
+```text
+provider sandbox/testnet 접근
+Fireblocks / BitGo / Circle 실제 비교
+출금 상태 전이의 실제 API 매핑
+nonce lane 코드 구현 여부
+최종 provider vs 자체 signer 결정
+```
+
 국내 규제와 수탁 챕터는 아래 순서로 읽습니다.
 
 ```text
@@ -147,42 +159,65 @@ content/blockchain/korea-custody-regulation/residual-risks.md
 6. 잔여 리스크
 ```
 
+국내 규제와 수탁 챕터는 유지하지만, 다음 우선순위에서는 제외합니다.
+
+규제 트랙은 법무/컴플라이언스 확인 없이는 추가 확인 항목이 많아지기 쉽습니다.
+
 ## Why This Topic Is Next
 
-현재 사용자가 맡은 주제는 블록체인 수탁형 지갑의 nonce 관리입니다.
+다음 주제는 Solana 입문입니다.
 
-Fireblocks를 사용할 수도 있지만, 최종 provider가 바뀔 수 있습니다.
+수탁형 지갑 스터디에서 Solana는 EVM과 다른 체인으로 잠깐 등장했습니다.
 
-그래서 먼저 벤더 중립 구조를 잡고, provider별 차이는 별도 검토합니다.
+EVM nonce lane, account model, transaction 처리 방식을 그대로 가져오면 Solana를 잘못 이해할 수 있습니다.
 
-서비스 흐름은 아래와 같습니다.
+먼저 Solana의 기본 실행 모델을 따로 봅니다.
+
+이번 트랙의 질문은 아래입니다.
 
 ```text
-외부 사용자 지갑
--> 사용자별 입금 주소
--> sweep
--> omnibus wallet/vault
--> withdrawal wallet pool
--> 사용자 외부 출금 주소
-
-omnibus wallet/vault
--> cold wallet
+Solana는 상태와 실행을
+account, transaction, instruction, program으로
+어떻게 나누어 다루는가?
 ```
 
-문제는 출금입니다.
-
-유저가 많아지고 동시에 출금 요청이 오면, 하나의 출금 wallet은 EVM nonce 순서 때문에 병목이 됩니다.
-
-현재 1차 설계 방향은 아래와 같습니다.
+예상 학습 흐름은 아래 순서입니다.
 
 ```text
-EVM 출금은 chainId + sourceAddress 단위 nonce lane으로 관리한다.
-같은 lane 안에서는 직렬화한다.
-여러 withdrawal wallet을 두어 lane 수를 늘린다.
-gas token 부족은 실패가 아니라 WAITING_FOR_GAS 상태로 분리한다.
-provider idempotency key로 중복 출금을 방지한다.
-webhook만 믿지 않고 chain watcher와 reconciliation을 둔다.
-provider 기능명은 일반 개념으로 매핑한다.
+Account, Transaction, Instruction, Program
+-> transaction 구조와 signature
+-> account ownership과 writable account
+-> token account와 Associated Token Account
+-> blockhash, confirmation, finality
+-> Solana 입출금 감지
+```
+
+처음 작성한 글입니다.
+
+```text
+content/blockchain/solana/account-transaction-instruction-program.md
+```
+
+온체인 데이터 읽기와 인덱싱은 그 다음 후보로 유지합니다.
+
+나중에 온체인 데이터 트랙으로 넘어가면 아래 흐름을 사용합니다.
+
+```text
+온체인 데이터 읽기
+-> transaction receipt
+-> event log
+-> confirmation과 reorg
+-> 입금 감지
+-> 출금 상태 추적
+-> reconciliation
+-> indexer 설계
+```
+
+처음 작성할 글 후보입니다.
+
+```text
+content/blockchain/onchain-data/index.md
+content/blockchain/onchain-data/how-to-detect-deposits.md
 ```
 
 ## Questions Before Next Step
@@ -190,30 +225,50 @@ provider 기능명은 일반 개념으로 매핑한다.
 다음 세션에서 먼저 확인할 질문입니다.
 
 ```text
-리서치 노트에서 더 확인해야 할 provider가 있는가?
-입금/sweep 흐름에서 실제 서비스와 다른 가정이 있는가?
-출금 상태 전이에 빠진 상태가 있는가?
-nonce lane을 직접 구현하는 코드 예제가 필요한가?
-사용할 custody provider 후보와 sandbox/testnet 접근 권한이 있는가?
-provider 검증 결과를 어떤 표준 형식으로 기록할 것인가?
-프로덕션 인프라에서 provider를 쓸지 자체 signer까지 검토할지 결정해야 하는가?
-국내 규제와 수탁 챕터에서 법무/컴플라이언스 확인이 필요한 항목은 무엇인가?
-Fireblocks 매핑을 다른 custody provider에도 확장할 것인가?
-원문 deep research를 나중에 별도 appendix로 노출할 것인가?
+Solana 다음 글은 transaction 구조로 갈 것인가, token account로 갈 것인가?
+Solana와 Ethereum의 account model 차이를 별도 글로 뺄 것인가?
+Solana token account와 Associated Token Account를 언제 다룰 것인가?
+Solana 입출금 감지는 온체인 데이터 트랙과 합칠 것인가, Solana 트랙 안에서 다룰 것인가?
 ```
 
 ## Research Sources To Check First
 
 글을 쓰기 전에 공식 문서를 먼저 확인합니다.
 
+Solana 글을 쓸 때 먼저 볼 자료입니다.
+
 ```text
-Ethereum.org - Accounts
+Solana Docs - Core Concepts
+Solana Docs - Account Structure
+Solana Docs - Transactions
+Solana Docs - Transaction Structure
+Solana Docs - Instructions
+Solana Docs - Instruction Structure
+Solana Docs - Programs
+Solana Docs - Tokens
+Solana Docs - Confirmation and Expiration
+```
+
+온체인 데이터 읽기와 인덱싱 글로 돌아갈 때 볼 자료입니다.
+
+```text
 Ethereum.org - Transactions
-Ethereum.org - Ethereum Virtual Machine
-Ethereum.org - Gas and fees
-Ethereum.org - Smart contracts
+Ethereum.org - Blocks
+Ethereum.org - Nodes and clients
+Ethereum.org - JSON-RPC API
+Ethereum Execution APIs - eth_getBlockByNumber
+Ethereum Execution APIs - eth_getTransactionReceipt
+Ethereum Execution APIs - eth_getLogs
+Ethereum JSON-RPC Specification
+EIP-20 Token Standard
+EIP-234 - blockHash option for eth_getLogs
 Solidity documentation
-Ethereum Yellow Paper, account state 관련 부분
+Ethereum Yellow Paper, transaction receipt와 log 관련 부분
+```
+
+수탁형 지갑이나 국내 규제 트랙으로 돌아갈 때만 아래 자료를 다시 확인합니다.
+
+```text
 Chainstack - Ethereum nonce management
 Fireblocks Developer Docs - Manage Withdrawals at Scale
 Fireblocks Developer Docs - Gas Station
